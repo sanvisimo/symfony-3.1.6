@@ -1,0 +1,46 @@
+site:
+  build: php
+  container_name: php_symfony
+  ports :
+    - "80:80"
+  volumes_from:
+    - app
+  links:
+    - database
+app:
+  image: php:5.6-fpm
+  volumes:
+    - ./sanvi:/var/www/html
+  command: "true"
+phpmyadmin:
+  image: phpmyadmin/phpmyadmin
+  container_name: phpmyadmin_symfony
+  environment:
+    - PMA_HOST=database
+    - PMA_ARBITRARY=1
+    - MYSQL_USERNAME=root
+    - MYSQL_PASSWORD=password
+  restart: always
+  ports:
+    - 8080:80
+  links:
+    - database
+  volumes_from:
+    - site
+database:
+  image: mariadb:latest
+  container_name: mariadb_symfony
+  volumes_from:
+    - data
+  ports:
+    - "3306:3306"  
+  environment:
+    - MYSQL_ROOT_PASSWORD=password
+    - MYSQL_DATABASE=symfony
+    - MYSQL_USER=symfony
+    - MYSQL_PASSWORD=symfonypass
+data:
+    image: mariadb:latest
+    volumes:
+        - /var/lib/mysql
+    command: "true"
